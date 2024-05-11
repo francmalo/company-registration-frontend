@@ -19,6 +19,7 @@
 
     <!-- Custom Theme Style -->
     <link href="../build/css/custom.min.css" rel="stylesheet">
+
 </head>
 
 <body class="pl-3" style="background:white;">
@@ -485,6 +486,30 @@
                                                     this person.</small>
                                             </div>
                                         </div>
+
+
+
+
+
+
+
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3 col-sm-3 col-xs-3">Signature <span
+                                                    class="text-danger">*</span>:</label>
+                                            <div class="col-md-9 col-sm-9 col-xs-9">
+                                                <div id="signature-pad" style="width: 100%; height: 300px;"></div>
+                                                <div class="signature-actions">
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                        id="clear-signature">Clear</button>
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                        id="undo-signature">Undo</button>
+                                                </div>
+                                                <input type="hidden" name="signature" id="signature-input">
+                                            </div>
+                                        </div>
+
+
+
                                     </div>
                                 </div>
                                 <!-- end of panel -->
@@ -519,6 +544,10 @@
             <!-- /footer content -->
         </div>
     </div>
+    <!-- Include the Signature Pad library -->
+
+
+
 
     <!-- jQuery -->
     <script src="../vendors/jquery/dist/jquery.min.js"></script>
