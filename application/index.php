@@ -115,6 +115,10 @@
 
                                     </div>
                                 </div>
+                                <!-- end of panel -->
+
+
+                                <!-- panel template -->
                                 <div class="x_panel">
                                     <div class="x_title">
                                         <h2>Proposed Company Names</h2><br>
@@ -226,7 +230,33 @@
 
                                     </div>
                                 </div>
+                                <!-- end of panel -->
 
+
+
+
+
+                                <!-- panel template -->
+
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2>Business Activities</h2>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content">
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3 col-sm-3 col-xs-3">Business Activities
+                                                <span class="text-danger">*</span>:</label>
+                                            <div class="col-md-9 col-sm-9 col-xs-9">
+                                                <textarea class="form-control form-control-sm"
+                                                    name="business_activities" rows="3"
+                                                    placeholder="Provide the main business activities of the company"
+                                                    required></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end of panel -->
 
                                 <!-- panel template -->
                                 <div class="x_panel">
