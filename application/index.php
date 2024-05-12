@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="clearfix"></div>
-                    <?php echo $sms ?>
+
                     <div class="row">
                         <div class="col-sm-12">
 
@@ -53,11 +53,11 @@
 
 
 
-                            <form class="form-horizontal form-label-top" enctype="multipart/form-data" method="post"
-                                action="process.php">
+                            <form id="myform" class="form-horizontal form-label-top" enctype="multipart/form-data"
+                                method="post" action="claude.php">
 
                                 <div class="col-md-7">
-                                    <form class="form-horizontal form-label-top"></form>
+
                                     <div class="x_panel">
                                         <div class="x_title">
                                             <h2>Applicant-info</h2>
@@ -89,26 +89,26 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
-                                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Address
-                                                            :</label>
+                                                        <label
+                                                            class="control-label col-md-3 col-sm-3 col-xs-3">Address:</label>
                                                         <div class="col-md-9 col-sm-9 col-xs-9">
                                                             <input type="text" class="form-control form-control-sm"
-                                                                name="username" value='' />
-
+                                                                name="address" value="" />
                                                         </div>
                                                     </div>
+
                                                     <div class="form-group row">
                                                         <label class="control-label col-md-3 col-sm-3 col-xs-3">Mobile
                                                             :</label>
                                                         <div class="col-md-9 col-sm-9 col-xs-9">
                                                             <input type="number" class="form-control form-control-sm"
-                                                                name="password" placeholder="" />
+                                                                name="mobile" placeholder="" />
 
                                                         </div>
                                                     </div>
 
-
                                                 </div>
+
                                                 <div class="col-md-6 col-sm-12  ">
 
                                                 </div>
@@ -198,302 +198,173 @@
 
                                             </div>
 
+
+
+
+                                        </div>
+                                    </div>
+                                    <!-- end of panel -->
+
+
+
+
+
+                                    <!-- panel template -->
+
+                                    <div class="x_panel">
+                                        <div class="x_title">
+                                            <h2>Business Activities</h2>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="x_content">
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-3 col-sm-3 col-xs-3">Business
+                                                    Activities
+                                                    <span class="text-danger">*</span>:</label>
+                                                <div class="col-md-9 col-sm-9 col-xs-9">
+                                                    <textarea class="form-control form-control-sm"
+                                                        name="business_activities" rows="3"
+                                                        placeholder="Provide the main business activities of the company"
+                                                        required></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end of panel -->
+
+
+
+
+
+                                    <!-- panel template -->
+                                    <div class="x_panel">
+                                        <div class="x_title">
+                                            <h2>Registered Office Addresses</h2>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div class="x_content">
+                                            <div>
+                                                <i>Please fill in the registered office addresses.</i>
+                                            </div>
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-md-12 col-sm-12">
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">County
+                                                            <span class="text-danger">*</span>:</label>
+                                                        <div class="col-md-9 col-sm-9 col-xs-9">
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                name="county" placeholder="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">District
+                                                            <span class="text-danger">*</span>:</label>
+                                                        <div class="col-md-9 col-sm-9 col-xs-9">
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                name="district" placeholder="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Locality
+                                                            <span class="text-danger">*</span>:</label>
+                                                        <div class="col-md-9 col-sm-9 col-xs-9">
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                name="locality" placeholder="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label
+                                                            class="control-label col-md-3 col-sm-3 col-xs-3">Building/Plot
+                                                            No. <span class="text-danger">*</span>:</label>
+                                                        <div class="col-md-9 col-sm-9 col-xs-9">
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                name="building_plot" placeholder="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label
+                                                            class="control-label col-md-3 col-sm-3 col-xs-3">Floor/Room
+                                                            No. <span class="text-danger">*</span>:</label>
+                                                        <div class="col-md-9 col-sm-9 col-xs-9">
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                name="floor_room" placeholder="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Postal
+                                                            Address <span class="text-danger">*</span>:</label>
+                                                        <div class="col-md-9 col-sm-9 col-xs-9">
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                name="postal_address" placeholder="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Email
+                                                            Address <span class="text-danger">*</span>:</label>
+                                                        <div class="col-md-9 col-sm-9 col-xs-9">
+                                                            <input type="email" class="form-control form-control-sm"
+                                                                name="email" placeholder="" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Phone
+                                                            Number
+                                                            <span class="text-danger">*</span>:</label>
+                                                        <div class="col-md-9 col-sm-9 col-xs-9">
+                                                            <input type="tel" class="form-control form-control-sm"
+                                                                name="phone" placeholder="" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- panel template -->
+
+                                    <span id="shareholder-director-container">
+
+                                    </span>
+                                    <!-- end of panel -->
+
+
+
+                                    <div class="form-group row">
+                                        <div class="col-md-9 col-sm-9 col-xs-9 col-md-offset-3">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
                             </form>
 
 
-                        </div>
-                    </div>
-                    <!-- end of panel -->
-
-
-
-
-
-                    <!-- panel template -->
-
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Business Activities</h2>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <div class="form-group row">
-                                <label class="control-label col-md-3 col-sm-3 col-xs-3">Business
-                                    Activities
-                                    <span class="text-danger">*</span>:</label>
-                                <div class="col-md-9 col-sm-9 col-xs-9">
-                                    <textarea class="form-control form-control-sm" name="business_activities" rows="3"
-                                        placeholder="Provide the main business activities of the company"
-                                        required></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end of panel -->
-
-
-
-
-
-                    <!-- panel template -->
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Registered Office Addresses</h2>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <div>
-                                <i>Please fill in the registered office addresses.</i>
-                            </div>
-                            <br />
-                            <div class="row">
-                                <div class="col-md-12 col-sm-12">
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">County
-                                            <span class="text-danger">*</span>:</label>
-                                        <div class="col-md-9 col-sm-9 col-xs-9">
-                                            <input type="text" class="form-control form-control-sm" name="county"
-                                                placeholder="" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">District
-                                            <span class="text-danger">*</span>:</label>
-                                        <div class="col-md-9 col-sm-9 col-xs-9">
-                                            <input type="text" class="form-control form-control-sm" name="district"
-                                                placeholder="" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Locality
-                                            <span class="text-danger">*</span>:</label>
-                                        <div class="col-md-9 col-sm-9 col-xs-9">
-                                            <input type="text" class="form-control form-control-sm" name="locality"
-                                                placeholder="" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Building/Plot
-                                            No. <span class="text-danger">*</span>:</label>
-                                        <div class="col-md-9 col-sm-9 col-xs-9">
-                                            <input type="text" class="form-control form-control-sm" name="building_plot"
-                                                placeholder="" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Floor/Room
-                                            No. <span class="text-danger">*</span>:</label>
-                                        <div class="col-md-9 col-sm-9 col-xs-9">
-                                            <input type="text" class="form-control form-control-sm" name="floor_room"
-                                                placeholder="" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Postal
-                                            Address <span class="text-danger">*</span>:</label>
-                                        <div class="col-md-9 col-sm-9 col-xs-9">
-                                            <input type="text" class="form-control form-control-sm"
-                                                name="postal_address" placeholder="" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Email
-                                            Address <span class="text-danger">*</span>:</label>
-                                        <div class="col-md-9 col-sm-9 col-xs-9">
-                                            <input type="email" class="form-control form-control-sm" name="email"
-                                                placeholder="" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-3">Phone
-                                            Number
-                                            <span class="text-danger">*</span>:</label>
-                                        <div class="col-md-9 col-sm-9 col-xs-9">
-                                            <input type="tel" class="form-control form-control-sm" name="phone"
-                                                placeholder="" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- panel template -->
-                    <div id="shareholder-director-container">
-                        <div class="x_panel">
-                            <div class="x_title">
-                                <h2>Shareholder/Director Information</h2>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="x_content">
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Person Type
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <div class="radio">
-                                            <label>
-                                                <input type="radio" name="person_type" value="shareholder">
-                                                Shareholder
-                                            </label>
-                                            <label>
-                                                <input type="radio" name="person_type" value="director">
-                                                Director
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Name <span
-                                            class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="text" class="form-control form-control-sm" name="name"
-                                            placeholder="" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Postal Address
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="text" class="form-control form-control-sm" name="postal_address"
-                                            placeholder="" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">National ID
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="file" class="form-control form-control-sm" name="national_id"
-                                            accept="image/*,application/pdf" required>
-                                        <small class="text-muted">Provide a copy of the National Identity
-                                            Card.</small>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">PIN Certificate
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="file" class="form-control form-control-sm" name="pin_certificate"
-                                            accept="image/*,application/pdf" required>
-                                        <small class="text-muted">Provide a copy of the PIN
-                                            certificate.</small>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Passport Photo
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="file" class="form-control form-control-sm" name="passport_photo"
-                                            accept="image/*" required>
-                                        <small class="text-muted">Provide one passport photo.</small>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Residential
-                                        Address
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="text" class="form-control form-control-sm"
-                                            name="residential_address"
-                                            placeholder="Plot Number, Estate, House Number, and Road" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Phone Number
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="tel" class="form-control form-control-sm" name="phone_number"
-                                            placeholder="" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Email Address
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="email" class="form-control form-control-sm" name="email"
-                                            placeholder="" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Number of Shares
-                                        <span class="text-danger">*</span>:</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-9">
-                                        <input type="number" class="form-control form-control-sm" name="shares"
-                                            placeholder="" required>
-                                        <small class="text-muted">Enter the number of shares to be allocated
-                                            to
-                                            this person.</small>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <div class="col-md-9 col-sm-9 col-xs-9 col-md-offset-3">
-                                        <button type="button" class="remove-panel">Remove</button>
-                                    </div>
-                                </div>
-
-                            </div>
 
 
                         </div>
                     </div>
-                    <!-- end of panel -->
-                    <button type="button" id="add-shareholder-director">Add
-                        Shareholder/Director</button>
-
-
-
-
-
-
-
 
                 </div>
-
-                <div class="form-group row">
-                    <div class="col-md-9 col-sm-9 col-xs-9 col-md-offset-3">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-                </div>
-
-
-                </form>
-
-
-
-
             </div>
+            <!-- /page content -->
+
+            <!-- footer content -->
+            <footer>
+                <div class="pull-right">
+
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
         </div>
-
-    </div>
-    </div>
-    <!-- /page content -->
-
-    <!-- footer content -->
-    <footer>
-        <div class="pull-right">
-
-        </div>
-        <div class="clearfix"></div>
-    </footer>
-    <!-- /footer content -->
-    </div>
     </div>
     <!-- Include the Signature Pad library -->
 
-    <script>
-    const shareholderDirectorPanel = document.querySelector('#shareholder-director-container .x_panel');
 
-    document.getElementById('add-shareholder-director').addEventListener('click', function() {
-        const panelTemplate = shareholderDirectorPanel.cloneNode(true);
-        document.getElementById('shareholder-director-container').appendChild(panelTemplate);
-    });
-
-    document.getElementById('shareholder-director-container').addEventListener('click', function(event) {
-        if (event.target.classList.contains('remove-panel')) {
-            const panel = event.target.closest('.x_panel');
-            panel.remove();
-        }
-    });
-    </script>
 
     <!-- jQuery -->
     <script src="../vendors/jquery/dist/jquery.min.js"></script>
@@ -507,6 +378,164 @@
     <script src="../vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js"></script>
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
+    <script>
+    function add_shareholder_row(count = 0) {
+        var mybutton = '';
+        if (count == 0) {
+            mybutton += '<button type="button" name="add_more" id="add_more" class="btn btn-success btn-xs">+</button>';
+        } else {
+            mybutton += '<button type="button" name="remove" id="' + count +
+                '" class="btn btn-danger btn-xs remove">-</button>';
+            mybutton +=
+                '| <button type="button" name="add_more" " class="btn btn-success btn-xs add_more2">+</button>';
+        }
+        var html = '';
+        html += '<span id="row' + count + '"><div class="x_panel">';
+        html += '<div class="x_title">';
+        html += '<h2>Shareholder/Director Information</h2>';
+        html += '<div class="clearfix"></div>';
+        html += '</div>';
+        html += '<div class="x_content">';
+        html += '<div class="form-group row">';
+        html += '<label class="control-label col-md-3 col-sm-3 col-xs-3">Person Type';
+        html += '<span class="text-danger">*</span>:</label>';
+        html += '<div class="col-md-9 col-sm-9 col-xs-9">';
+        html += '<div class="radio">';
+        html += '<label>';
+        html += '<input type="radio" name="person_type[]"';
+        html += 'value="shareholder"> Shareholder';
+        html += '</label>';
+        html += '<label>';
+        html += '<input type="radio" name="person_type[]" value="director">';
+        html += 'Director';
+        html += '</label>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group row">';
+        html +=
+            '<label class="control-label col-md-3 col-sm-3 col-xs-3">Name <span class="text-danger">*</span>:</label> ';
+
+        html += '<div class="col-md-9 col-sm-9 col-xs-9">';
+        html += '<input type="text" class="form-control form-control-sm" name="name[]" placeholder="" required>';
+        html += '  </div>';
+        html += '</div>';
+
+        html += '  <div class="form-group row">';
+        html +=
+            '  <label class="control-label col-md-3 col-sm-3 col-xs-3">Postal Address <span class="text-danger">*</span>:</label>';
+        html += '<div class="col-md-9 col-sm-9 col-xs-9">';
+        html +=
+            '<input type="text" class="form-control form-control-sm" name="postal_address[]" placeholder="" required>';
+        html += '  </div>';
+        html += '</div>';
+        html += '  <div class="form-group row">';
+        html += '  <label class="control-label col-md-3 col-sm-3 col-xs-3">National ID';
+        html += '<span class="text-danger">*</span>:</label>';
+        html += '  <div class="col-md-9 col-sm-9 col-xs-9">';
+        html +=
+            '  <input type="file" class="form-control form-control-sm" name="national_id[]" accept="image/*,application/pdf" required>';
+        html += '  <small class="text-muted">Provide a copy of the National Identity Card.</small>';
+        html += '  </div>';
+        html += '</div>';
+        html += '  <div class="form-group row">';
+        html += '  <label class="control-label col-md-3 col-sm-3 col-xs-3">PIN Certificate';
+        html += '<span class="text-danger">*</span>:</label>';
+        html += '  <div class="col-md-9 col-sm-9 col-xs-9">';
+        html +=
+            '  <input type="file" class="form-control form-control-sm" name="pin_certificate[]" accept="image/*,application/pdf" required>';
+        html += '<small class="text-muted">Provide a copy of the PIN certificate.</small>';
+        html += '  </div>';
+        html += '  </div>';
+        html += '  <div class="form-group row">';
+        html += '<label class="control-label col-md-3 col-sm-3 col-xs-3">Passport Photo';
+        html += '  <span class="text-danger">*</span>:</label>';
+        html += '  <div class="col-md-9 col-sm-9 col-xs-9">';
+        html +=
+            '<input type="file" class="form-control form-control-sm" name="passport_photo[]" accept="image/*" required>';
+        html += '  <small class="text-muted">Provide one passport photo.</small>';
+        html += '  </div>';
+        html += '</div>';
+        html += '  <div class="form-group row">';
+        html +=
+            '  <label class="control-label col-md-3 col-sm-3 col-xs-3">Residential Address <span class="text-danger">*</span>:</label>';
+        html += '<div class="col-md-9 col-sm-9 col-xs-9">';
+        html +=
+            '  <input type="text" class="form-control form-control-sm" name="residential_address[]" placeholder="Plot Number, Estate, House Number, and Road" required>';
+        html += '  </div>';
+        html += '  </div>';
+        html += '  <div class="form-group row">';
+        html += '  <label class="control-label col-md-3 col-sm-3 col-xs-3">Phone Number';
+        html += '<span class="text-danger">*</span>:</label>';
+        html += '  <div class="col-md-9 col-sm-9 col-xs-9">';
+        html +=
+            '    <input type="tel" class="form-control form-control-sm" name="phone_number[]" placeholder="" required>';
+        html += '</div>';
+        html += '  </div>';
+        html += '<div class="form-group row">';
+        html +=
+            '<label class="control-label col-md-3 col-sm-3 col-xs-3">Email Address <span class="text-danger">*</span>:</label>';
+        html += '  <div class="col-md-9 col-sm-9 col-xs-9">';
+        html += '<input type="email" class="form-control form-control-sm" name="email[]" placeholder="" required>';
+        html += '  </div>';
+        html += '  </div>';
+        html += '  <div class="form-group row">';
+        html += '<label class="control-label col-md-3 col-sm-3 col-xs-3">Number of Shares';
+        html += '<span class="text-danger">*</span>:</label>';
+        html += '<div class="col-md-9 col-sm-9 col-xs-9">';
+        html +=
+            '  <input type="number" class="form-control form-control-sm"   name="shares[]" placeholder="" required>';
+        html += '<small class="text-muted">Enter the number of shares to be allocated to this person.</small>';
+        html += '  </div>';
+        html += '  </div>';
+
+        html += '  <div>' + mybutton + '</div>';
+        html += '</div>';
+        html += '</div></span>';
+        $('#shareholder-director-container').append(html);
+    }
+
+
+    var count = 0;
+    $(document).ready(function() {
+        //add one share holder by default
+        add_shareholder_row();
+    });
+
+    //add share holder
+    $(document).on('click', '#add_more', function() {
+        count = count + 1;
+        add_shareholder_row(count);
+    });
+
+    //add share holder
+    $(document).on('click', '.add_more2', function() {
+        count = count + 1;
+        add_shareholder_row(count);
+    });
+
+    //remove share holder
+    $(document).on('click', '.remove', function() {
+        var row_no = $(this).attr("id");
+        $('#row' + row_no).remove();
+    });
+
+
+
+    $(document).on('submit', '#myform', function(e) {
+        e.preventDefault();
+        var form_data = $(this).serialize();
+        $.ajax({
+            type: "post",
+            url: "claude.php",
+            data: form_data,
+            dataType: "text",
+            success: function(data) {
+
+            }
+        })
+    });
+    </script>
 
 
 </body>
