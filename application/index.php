@@ -305,7 +305,7 @@
                                                             Address <span class="text-danger">*</span>:</label>
                                                         <div class="col-md-9 col-sm-9 col-xs-9">
                                                             <input type="text" class="form-control form-control-sm"
-                                                                name="postal_address" placeholder="" />
+                                                                name="application_postal_address" placeholder="" />
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
@@ -313,7 +313,7 @@
                                                             Address <span class="text-danger">*</span>:</label>
                                                         <div class="col-md-9 col-sm-9 col-xs-9">
                                                             <input type="email" class="form-control form-control-sm"
-                                                                name="email" placeholder="" />
+                                                                name="application_email" placeholder="" />
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
