@@ -60,7 +60,7 @@
 
                                     <div class="x_panel">
                                         <div class="x_title">
-                                            <h2>Applicant-info</h2>
+                                            <h2>Contact-Person-info</h2>
 
                                             <div class="clearfix"></div>
                                         </div>
@@ -219,13 +219,22 @@
                                         <div class="x_content">
                                             <div class="form-group row">
                                                 <label class="control-label col-md-3 col-sm-3 col-xs-3">Business
-                                                    Activities
-                                                    <span class="text-danger">*</span>:</label>
+                                                    Activities <span class="text-danger">*</span>:</label>
                                                 <div class="col-md-9 col-sm-9 col-xs-9">
                                                     <textarea class="form-control form-control-sm"
                                                         name="business_activities" rows="3"
                                                         placeholder="Provide the main business activities of the company"
                                                         required></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-3 col-sm-3 col-xs-3">Number of
+                                                    Employees <span class="text-danger">*</span>:</label>
+                                                <div class="col-md-9 col-sm-9 col-xs-9">
+                                                    <input type="number" class="form-control form-control-sm"
+                                                        name="num_employees" placeholder="Enter the number of employees"
+                                                        required>
                                                 </div>
                                             </div>
                                         </div>
@@ -434,7 +443,7 @@
         html += '<span class="text-danger">*</span>:</label>';
         html += '  <div class="col-md-9 col-sm-9 col-xs-9">';
         html +=
-            '  <input type="file" class="form-control form-control-sm" name="national_id[]" accept="image/*,application/pdf" required>';
+            '  <input type="file" class="form-control form-control-sm" name="national_id[]"  id="national_id" accept="image/*,application/pdf" required>';
         html += '  <small class="text-muted">Provide a copy of the National Identity Card.</small>';
         html += '  </div>';
         html += '</div>';
@@ -443,7 +452,7 @@
         html += '<span class="text-danger">*</span>:</label>';
         html += '  <div class="col-md-9 col-sm-9 col-xs-9">';
         html +=
-            '  <input type="file" class="form-control form-control-sm" name="pin_certificate[]" accept="image/*,application/pdf" required>';
+            '  <input type="file" class="form-control form-control-sm" name="pin_certificate[]"  id="pin_certificate" accept="image/*,application/pdf" required>';
         html += '<small class="text-muted">Provide a copy of the PIN certificate.</small>';
         html += '  </div>';
         html += '  </div>';
@@ -452,7 +461,7 @@
         html += '  <span class="text-danger">*</span>:</label>';
         html += '  <div class="col-md-9 col-sm-9 col-xs-9">';
         html +=
-            '<input type="file" class="form-control form-control-sm" name="passport_photo[]" accept="image/*" required>';
+            ' <input type="file" class="form-control form-control-sm" name="passport_photo[]"  id="passport_photo" accept="image/*" required>';
         html += '  <small class="text-muted">Provide one passport photo.</small>';
         html += '  </div>';
         html += '</div>';
@@ -522,18 +531,40 @@
 
 
 
+    // $(document).on('submit', '#myform', function(e) {
+    //     e.preventDefault();
+    //     var form_data = $(this).serialize();
+    //     $.ajax({
+    //         type: "post",
+    //         url: "claude.php",
+    //         data: form_data,
+    //         dataType: "text",
+    //         success: function(data) {
+
+    //         }
+    //     })
+    // });
     $(document).on('submit', '#myform', function(e) {
         e.preventDefault();
-        var form_data = $(this).serialize();
-        $.ajax({
-            type: "post",
-            url: "claude.php",
-            data: form_data,
-            dataType: "text",
-            success: function(data) {
 
+        var formData = new FormData(this);
+
+        $.ajax({
+            type: "POST",
+            url: "claude.php",
+            data: formData,
+            dataType: "text",
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                // Handle the successful response
+                console.log(data);
+            },
+            error: function(xhr, status, error) {
+                // Handle the error
+                console.error(error);
             }
-        })
+        });
     });
     </script>
 
