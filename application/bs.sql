@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS applications (
     locality VARCHAR(255),
     building_plot VARCHAR(255),
     floor_room VARCHAR(255),
-    postal_address VARCHAR(255),
-    email VARCHAR(255),
+    application_postal_address VARCHAR(255),
+    application_email VARCHAR(255),
     phone VARCHAR(20)
 );
 
