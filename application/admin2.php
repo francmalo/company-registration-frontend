@@ -74,18 +74,9 @@ try {
                                     <th>ID</th>
                                     <th>Full Name</th>
                                     <th>Username</th>
-                                    <th>Address</th>
-                                    <th>Mobile</th>
                                     <th>Business Activities</th>
                                     <th>Employees</th>
-                                    <th>County</th>
-                                    <th>District</th>
-                                    <th>Locality</th>
-                                    <th>Building Plot</th>
-                                    <th>Floor Room</th>
-                                    <th>Postal Address</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -94,66 +85,158 @@ try {
                                     <td><?= htmlspecialchars($application['id']) ?></td>
                                     <td><?= htmlspecialchars($application['fullname']) ?></td>
                                     <td><?= htmlspecialchars($application['username']) ?></td>
-                                    <td><?= htmlspecialchars($application['address']) ?></td>
-                                    <td><?= htmlspecialchars($application['mobile']) ?></td>
                                     <td><?= htmlspecialchars($application['business_activities']) ?></td>
                                     <td><?= htmlspecialchars($application['num_employees']) ?></td>
-                                    <td><?= htmlspecialchars($application['county']) ?></td>
-                                    <td><?= htmlspecialchars($application['district']) ?></td>
-                                    <td><?= htmlspecialchars($application['locality']) ?></td>
-                                    <td><?= htmlspecialchars($application['building_plot']) ?></td>
-                                    <td><?= htmlspecialchars($application['floor_room']) ?></td>
-                                    <td><?= htmlspecialchars($application['application_postal_address']) ?></td>
-                                    <td><?= htmlspecialchars($application['application_email']) ?></td>
-                                    <td><?= htmlspecialchars($application['phone']) ?></td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#applicationModal<?= htmlspecialchars($application['id']) ?>">
+                                            View Details
+                                        </button>
+                                    </td>
                                 </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Shareholders/Directors</h2>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Application ID</th>
-                                    <th>Person Type</th>
-                                    <th>Name</th>
-                                    <th>Postal Address</th>
-                                    <th>National ID</th>
-                                    <th>PIN Certificate</th>
-                                    <th>Passport Photo</th>
-                                    <th>Residential Address</th>
-                                    <th>Phone Number</th>
-                                    <th>Email</th>
-                                    <th>Shares</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($shareholders_directors as $sd): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($sd['id']) ?></td>
-                                    <td><?= htmlspecialchars($sd['application_id']) ?></td>
-                                    <td><?= htmlspecialchars($sd['person_type']) ?></td>
-                                    <td><?= htmlspecialchars($sd['name']) ?></td>
-                                    <td><?= htmlspecialchars($sd['postal_address']) ?></td>
-                                    <td><a href="<?= htmlspecialchars($sd['national_id']) ?>" target="_blank"><i
-                                                class="fas fa-file-alt"></i> View</a></td>
-                                    <td><a href="<?= htmlspecialchars($sd['pin_certificate']) ?>" target="_blank"><i
-                                                class="fas fa-file-alt"></i> View</a></td>
-                                    <td><a href="<?= htmlspecialchars($sd['passport_photo']) ?>" target="_blank"><i
-                                                class="fas fa-file-alt"></i> View</a></td>
-                                    <td><?= htmlspecialchars($sd['residential_address']) ?></td>
-                                    <td><?= htmlspecialchars($sd['phone_number']) ?></td>
-                                    <td><?= htmlspecialchars($sd['email']) ?></td>
-                                    <td><?= htmlspecialchars($sd['shares']) ?></td>
-                                </tr>
+                                <!-- Modal for Application Details -->
+                                <div class="modal fade" id="applicationModal<?= htmlspecialchars($application['id']) ?>"
+                                    tabindex="-1"
+                                    aria-labelledby="applicationModalLabel<?= htmlspecialchars($application['id']) ?>"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"
+                                                    id="applicationModalLabel<?= htmlspecialchars($application['id']) ?>">
+                                                    Application Details</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    <div class="mb-3">
+                                                        <label for="fullName" class="form-label">Full Name</label>
+                                                        <input type="text" class="form-control" id="fullName"
+                                                            value="<?= htmlspecialchars($application['fullname']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="username" class="form-label">Username</label>
+                                                        <input type="text" class="form-control" id="username"
+                                                            value="<?= htmlspecialchars($application['username']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="address" class="form-label">Address</label>
+                                                        <input type="text" class="form-control" id="address"
+                                                            value="<?= htmlspecialchars($application['address']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="mobile" class="form-label">Mobile</label>
+                                                        <input type="text" class="form-control" id="mobile"
+                                                            value="<?= htmlspecialchars($application['mobile']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="businessActivities" class="form-label">Business
+                                                            Activities</label>
+                                                        <input type="text" class="form-control" id="businessActivities"
+                                                            value="<?= htmlspecialchars($application['business_activities']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="numEmployees" class="form-label">Number of
+                                                            Employees</label>
+                                                        <input type="text" class="form-control" id="numEmployees"
+                                                            value="<?= htmlspecialchars($application['num_employees']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="county" class="form-label">County</label>
+                                                        <input type="text" class="form-control" id="county"
+                                                            value="<?= htmlspecialchars($application['county']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="district" class="form-label">District</label>
+                                                        <input type="text" class="form-control" id="district"
+                                                            value="<?= htmlspecialchars($application['district']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="locality" class="form-label">Locality</label>
+                                                        <input type="text" class="form-control" id="locality"
+                                                            value="<?= htmlspecialchars($application['locality']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="buildingPlot"
+                                                            class="form-label">Building/Plot</label>
+                                                        <input type="text" class="form-control" id="buildingPlot"
+                                                            value="<?= htmlspecialchars($application['building_plot']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="floorRoom" class="form-label">Floor/Room</label>
+                                                        <input type="text" class="form-control" id="floorRoom"
+                                                            value="<?= htmlspecialchars($application['floor_room']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="postalAddress" class="form-label">Postal
+                                                            Address</label>
+                                                        <input type="text" class="form-control" id="postalAddress"
+                                                            value="<?= htmlspecialchars($application['application_postal_address']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="email" class="form-label">Email</label>
+                                                        <input type="email" class="form-control" id="email"
+                                                            value="<?= htmlspecialchars($application['application_email']) ?>"
+                                                            readonly>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="phone" class="form-label">Phone</label>
+                                                        <input type="text" class="form-control" id="phone"
+                                                            value="<?= htmlspecialchars($application['phone']) ?>"
+                                                            readonly>
+                                                    </div>
+
+                                                    <h5>Shareholders/Directors</h5>
+                                                    <table class="table table-striped table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Person Type</th>
+                                                                <th>Shares</th>
+                                                                <th>Email</th>
+                                                                <th>Phone Number</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <?php
+                                                            $application_shareholders_directors = array_filter($shareholders_directors, function($sd) use ($application) {
+                                                                return $sd['application_id'] == $application['id'];
+                                                            });
+                                                            foreach ($application_shareholders_directors as $sd):
+                                                            ?>
+                                                            <tr>
+                                                                <td><?= htmlspecialchars($sd['name']) ?></td>
+                                                                <td><?= htmlspecialchars($sd['person_type']) ?></td>
+                                                                <td><?= htmlspecialchars($sd['shares']) ?></td>
+                                                                <td><?= htmlspecialchars($sd['email']) ?></td>
+                                                                <td><?= htmlspecialchars($sd['phone_number']) ?></td>
+                                                            </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
