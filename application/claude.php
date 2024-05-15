@@ -1,131 +1,91 @@
 <?php
 // Database connection details
-$servername = "localhost";
-$username = "root";
-$password = "safaricom";
-$dbname = "business";
+$host = 'localhost';
+$dbname = 'business';
+$username = 'root';
+$password = 'safaricom';
 
 try {
-    // Create connection
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Create a new PDO instance
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Prepare the SQL statement for the applications table
+    $stmt_applications = $pdo->prepare("INSERT INTO applications (fullname, username, address, mobile, name1, name2, name3, name4, name5, business_activities, num_employees, county, district, locality, building_plot, floor_room, application_postal_address, application_email, phone) VALUES (:fullname, :username, :address, :mobile, :name1, :name2, :name3, :name4, :name5, :business_activities, :num_employees, :county, :district, :locality, :building_plot, :floor_room, :application_postal_address, :application_email, :phone)");
+
+    // Bind the values for the applications table
+    $stmt_applications->bindParam(':fullname', $_POST['fullname']);
+    $stmt_applications->bindParam(':username', $_POST['username']);
+    $stmt_applications->bindParam(':address', $_POST['address']);
+    $stmt_applications->bindParam(':mobile', $_POST['mobile']);
+    $stmt_applications->bindParam(':name1', $_POST['name1']);
+    $stmt_applications->bindParam(':name2', $_POST['name2']);
+    $stmt_applications->bindParam(':name3', $_POST['name3']);
+    $stmt_applications->bindParam(':name4', $_POST['name4']);
+    $stmt_applications->bindParam(':name5', $_POST['name5']);
+    $stmt_applications->bindParam(':business_activities', $_POST['business_activities']);
+    $stmt_applications->bindParam(':num_employees', $_POST['num_employees']);
+    $stmt_applications->bindParam(':county', $_POST['county']);
+    $stmt_applications->bindParam(':district', $_POST['district']);
+    $stmt_applications->bindParam(':locality', $_POST['locality']);
+    $stmt_applications->bindParam(':building_plot', $_POST['building_plot']);
+    $stmt_applications->bindParam(':floor_room', $_POST['floor_room']);
+    $stmt_applications->bindParam(':application_postal_address', $_POST['application_postal_address']);
+    $stmt_applications->bindParam(':application_email', $_POST['application_email']);
+    $stmt_applications->bindParam(':phone', $_POST['phone']);
+
+    // Execute the statement for the applications table
+    $stmt_applications->execute();
+
+    // Get the last inserted ID for the application
+    $application_id = $pdo->lastInsertId();
+
+    // Prepare the SQL statement for the shareholders_directors table
+    $stmt_shareholders_directors = $pdo->prepare("INSERT INTO shareholders_directors (application_id, person_type, name, postal_address, national_id, pin_certificate, passport_photo, residential_address, phone_number, email, shares) VALUES (:application_id, :person_type, :name, :postal_address, :national_id, :pin_certificate, :passport_photo, :residential_address, :phone_number, :email, :shares)");
+
+    // Loop through the shareholders/directors data and insert into the shareholders_directors table
+    foreach ($_POST['name'] as $key => $value) {
+        $person_type = $_POST['person_type_' . $key][0];
+        $name = $_POST['name'][$key];
+        $postal_address = $_POST['postal_address'][$key];
+        $national_id = uploadFile($_FILES['national_id']['name'][$key], $_FILES['national_id']['tmp_name'][$key]);
+        $pin_certificate = uploadFile($_FILES['pin_certificate']['name'][$key], $_FILES['pin_certificate']['tmp_name'][$key]);
+        $passport_photo = uploadFile($_FILES['passport_photo']['name'][$key], $_FILES['passport_photo']['tmp_name'][$key]);
+        $residential_address = $_POST['residential_address'][$key];
+        $phone_number = $_POST['phone_number'][$key];
+        $email = $_POST['email'][$key];
+        $shares = $_POST['shares'][$key];
+
+        $stmt_shareholders_directors->bindParam(':application_id', $application_id);
+        $stmt_shareholders_directors->bindParam(':person_type', $person_type);
+        $stmt_shareholders_directors->bindParam(':name', $name);
+        $stmt_shareholders_directors->bindParam(':postal_address', $postal_address);
+        $stmt_shareholders_directors->bindParam(':national_id', $national_id);
+        $stmt_shareholders_directors->bindParam(':pin_certificate', $pin_certificate);
+        $stmt_shareholders_directors->bindParam(':passport_photo', $passport_photo);
+        $stmt_shareholders_directors->bindParam(':residential_address', $residential_address);
+        $stmt_shareholders_directors->bindParam(':phone_number', $phone_number);
+        $stmt_shareholders_directors->bindParam(':email', $email);
+        $stmt_shareholders_directors->bindParam(':shares', $shares);
+
+        $stmt_shareholders_directors->execute();
+    }
+
+    echo "Data inserted successfully!";
 } catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+    echo "Error: " . $e->getMessage();
 }
 
-// Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Prepare the SQL statement to insert application data
-    $stmt = $conn->prepare("INSERT INTO applications (fullname, username, address, mobile, name1, name2, name3, name4, name5, business_activities, num_employees, county, district, locality, building_plot, floor_room, application_postal_address, application_email, phone) VALUES (:fullname, :username, :address, :mobile, :name1, :name2, :name3, :name4, :name5, :business_activities, :num_employees, :county, :district, :locality, :building_plot, :floor_room, :application_postal_address, :application_email, :phone)");
+// Function to upload files
+function uploadFile($fileName, $tempName)
+{
+    $targetDir = "uploads/";
+    $targetPath = $targetDir . basename($fileName);
 
-    // Bind the parameters
-    $stmt->bindParam(':fullname', $fullname, PDO::PARAM_STR);
-    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-    $stmt->bindParam(':address', $address, PDO::PARAM_STR);
-    $stmt->bindParam(':mobile', $mobile, PDO::PARAM_STR);
-    $stmt->bindParam(':name1', $name1, PDO::PARAM_STR);
-    $stmt->bindParam(':name2', $name2, PDO::PARAM_STR);
-    $stmt->bindParam(':name3', $name3, PDO::PARAM_STR);
-    $stmt->bindParam(':name4', $name4, PDO::PARAM_STR);
-    $stmt->bindParam(':name5', $name5, PDO::PARAM_STR);
-    $stmt->bindParam(':business_activities', $business_activities, PDO::PARAM_STR);
-    $stmt->bindParam(':num_employees', $num_employees, PDO::PARAM_INT);
-    $stmt->bindParam(':county', $county, PDO::PARAM_STR);
-    $stmt->bindParam(':district', $district, PDO::PARAM_STR);
-    $stmt->bindParam(':locality', $locality, PDO::PARAM_STR);
-    $stmt->bindParam(':building_plot', $building_plot, PDO::PARAM_STR);
-    $stmt->bindParam(':floor_room', $floor_room, PDO::PARAM_STR);
-    $stmt->bindParam(':application_postal_address', $application_postal_address, PDO::PARAM_STR);
-    $stmt->bindParam(':application_email', $application_email, PDO::PARAM_STR);
-    $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
-
-    // Assign the values from the form data
-    $fullname = $_POST['fullname'] ?? '';
-    $username = $_POST['username'] ?? '';
-    $address = $_POST['address'] ?? '';
-    $mobile = $_POST['mobile'] ?? '';
-    $name1 = $_POST['name1'] ?? '';
-    $name2 = $_POST['name2'] ?? '';
-    $name3 = $_POST['name3'] ?? '';
-    $name4 = $_POST['name4'] ?? '';
-    $name5 = $_POST['name5'] ?? '';
-    $business_activities = $_POST['business_activities'] ?? '';
-    $num_employees = $_POST['num_employees'] ?? '';
-    $county = $_POST['county'] ?? '';
-    $district = $_POST['district'] ?? '';
-    $locality = $_POST['locality'] ?? '';
-    $building_plot = $_POST['building_plot'] ?? '';
-    $floor_room = $_POST['floor_room'] ?? '';
-    $application_postal_address = $_POST['application_postal_address'] ?? '';
-    $application_email = $_POST['application_email'] ?? '';
-    $phone = $_POST['phone'] ?? '';
-
-    // Execute the statement
-    if ($stmt->execute()) {
-        $application_id = $conn->lastInsertId();
-
-        // Insert shareholder/director data into the shareholders_directors table
-        $person_types = $_POST['person_type'] ?? [];
-        $names = $_POST['name'] ?? [];
-        $postal_addresses = $_POST['postal_address'] ?? [];
-        $national_ids = $_FILES['national_id']['name'] ?? [];
-        $pin_certificates = $_FILES['pin_certificate']['name'] ?? [];
-        $passport_photos = $_FILES['passport_photo']['name'] ?? [];
-        $residential_addresses = $_POST['residential_address'] ?? [];
-        $phone_numbers = $_POST['phone_number'] ?? [];
-        $emails = $_POST['email'] ?? [];
-        $shares = $_POST['shares'] ?? [];
-
-        $uploads_dir = 'uploads/';
-
-        for ($i = 0; $i < count($person_types); $i++) {
-            // Debugging information
-            error_log("Processing entry $i");
-
-            $national_id_target_file = '';
-            $pin_certificate_target_file = '';
-            $passport_photo_target_file = '';
-
-            if (isset($_FILES["national_id"]["tmp_name"][$i]) && $_FILES["national_id"]["error"][$i] == UPLOAD_ERR_OK) {
-                $national_id_target_file = $uploads_dir . basename($_FILES["national_id"]["name"][$i]);
-                move_uploaded_file($_FILES["national_id"]["tmp_name"][$i], $national_id_target_file);
-            }
-
-            if (isset($_FILES["pin_certificate"]["tmp_name"][$i]) && $_FILES["pin_certificate"]["error"][$i] == UPLOAD_ERR_OK) {
-                $pin_certificate_target_file = $uploads_dir . basename($_FILES["pin_certificate"]["name"][$i]);
-                move_uploaded_file($_FILES["pin_certificate"]["tmp_name"][$i], $pin_certificate_target_file);
-            }
-
-            if (isset($_FILES["passport_photo"]["tmp_name"][$i]) && $_FILES["passport_photo"]["error"][$i] == UPLOAD_ERR_OK) {
-                $passport_photo_target_file = $uploads_dir . basename($_FILES["passport_photo"]["name"][$i]);
-                move_uploaded_file($_FILES["passport_photo"]["tmp_name"][$i], $passport_photo_target_file);
-            }
-
-            // Prepare the SQL statement to insert shareholder/director data
-            $stmt = $conn->prepare("INSERT INTO shareholders_directors (application_id, person_type, name, postal_address, national_id, pin_certificate, passport_photo, residential_address, phone_number, email, shares) VALUES (:application_id, :person_type, :name, :postal_address, :national_id, :pin_certificate, :passport_photo, :residential_address, :phone_number, :email, :shares)");
-
-            // Bind the parameters
-            $stmt->bindParam(':application_id', $application_id, PDO::PARAM_INT);
-            $stmt->bindParam(':person_type', $person_types[$i], PDO::PARAM_STR);
-            $stmt->bindParam(':name', $names[$i], PDO::PARAM_STR);
-            $stmt->bindParam(':postal_address', $postal_addresses[$i], PDO::PARAM_STR);
-            $stmt->bindParam(':national_id', $national_id_target_file, PDO::PARAM_STR);
-            $stmt->bindParam(':pin_certificate', $pin_certificate_target_file, PDO::PARAM_STR);
-            $stmt->bindParam(':passport_photo', $passport_photo_target_file, PDO::PARAM_STR);
-            $stmt->bindParam(':residential_address', $residential_addresses[$i], PDO::PARAM_STR);
-            $stmt->bindParam(':phone_number', $phone_numbers[$i], PDO::PARAM_STR);
-            $stmt->bindParam(':email', $emails[$i], PDO::PARAM_STR);
-            $stmt->bindParam(':shares', $shares[$i], PDO::PARAM_STR);
-
-           // Execute the statement
-           $stmt->execute();
-       }
-
-       echo "Data inserted successfully";
-   } else {
-       echo "Error inserting data: " . $stmt->errorInfo()[2];
-   }
+    if (move_uploaded_file($tempName, $targetPath)) {
+        return $targetPath;
+    } else {
+        return "";
+    }
 }
-
-$conn = null;
 ?>

@@ -5,17 +5,41 @@ $username = "root";
 $password = "safaricom";
 $dbname = "business";
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+try {
+    // Create connection
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
 }
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Insert application data into the applications table
+    // Prepare the SQL statement to insert application data
+    $stmt = $conn->prepare("INSERT INTO applications (fullname, username, address, mobile, name1, name2, name3, name4, name5, business_activities, num_employees, county, district, locality, building_plot, floor_room, application_postal_address, application_email, phone) VALUES (:fullname, :username, :address, :mobile, :name1, :name2, :name3, :name4, :name5, :business_activities, :num_employees, :county, :district, :locality, :building_plot, :floor_room, :application_postal_address, :application_email, :phone)");
+
+    // Bind the parameters
+    $stmt->bindParam(':fullname', $fullname, PDO::PARAM_STR);
+    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+    $stmt->bindParam(':address', $address, PDO::PARAM_STR);
+    $stmt->bindParam(':mobile', $mobile, PDO::PARAM_STR);
+    $stmt->bindParam(':name1', $name1, PDO::PARAM_STR);
+    $stmt->bindParam(':name2', $name2, PDO::PARAM_STR);
+    $stmt->bindParam(':name3', $name3, PDO::PARAM_STR);
+    $stmt->bindParam(':name4', $name4, PDO::PARAM_STR);
+    $stmt->bindParam(':name5', $name5, PDO::PARAM_STR);
+    $stmt->bindParam(':business_activities', $business_activities, PDO::PARAM_STR);
+    $stmt->bindParam(':num_employees', $num_employees, PDO::PARAM_INT);
+    $stmt->bindParam(':county', $county, PDO::PARAM_STR);
+    $stmt->bindParam(':district', $district, PDO::PARAM_STR);
+    $stmt->bindParam(':locality', $locality, PDO::PARAM_STR);
+    $stmt->bindParam(':building_plot', $building_plot, PDO::PARAM_STR);
+    $stmt->bindParam(':floor_room', $floor_room, PDO::PARAM_STR);
+    $stmt->bindParam(':application_postal_address', $application_postal_address, PDO::PARAM_STR);
+    $stmt->bindParam(':application_email', $application_email, PDO::PARAM_STR);
+    $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+
+    // Assign the values from the form data
     $fullname = $_POST['fullname'] ?? '';
     $username = $_POST['username'] ?? '';
     $address = $_POST['address'] ?? '';
@@ -32,15 +56,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $locality = $_POST['locality'] ?? '';
     $building_plot = $_POST['building_plot'] ?? '';
     $floor_room = $_POST['floor_room'] ?? '';
-    $postal_address = $_POST['postal_address'] ?? '';
-    $email = $_POST['email'] ?? '';
+    $application_postal_address = $_POST['application_postal_address'] ?? '';
+    $application_email = $_POST['application_email'] ?? '';
     $phone = $_POST['phone'] ?? '';
 
-    $sql = "INSERT INTO applications (fullname, username, address, mobile, name1, name2, name3, name4, name5, business_activities, num_employees, county, district, locality, building_plot, floor_room, postal_address, email, phone)
-    VALUES ('$fullname', '$username', '$address', '$mobile', '$name1', '$name2', '$name3', '$name4', '$name5', '$business_activities', '$num_employees', '$county', '$district', '$locality', '$building_plot', '$floor_room', '$postal_address', '$email', '$phone')";
-
-    if ($conn->query($sql) === TRUE) {
-        $application_id = $conn->insert_id;
+    // Execute the statement
+    if ($stmt->execute()) {
+        $application_id = $conn->lastInsertId();
 
         // Insert shareholder/director data into the shareholders_directors table
         $person_types = $_POST['person_type'] ?? [];
@@ -79,22 +101,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 move_uploaded_file($_FILES["passport_photo"]["tmp_name"][$i], $passport_photo_target_file);
             }
 
-            $sql = "INSERT INTO shareholders_directors (application_id, person_type, name, postal_address, national_id, pin_certificate, passport_photo, residential_address, phone_number, email, shares)
-            VALUES ('$application_id', '" . $person_types[$i] . "', '" . $names[$i] . "', '" . $postal_addresses[$i] . "', '" . $national_id_target_file . "', '" . $pin_certificate_target_file . "', '" . $passport_photo_target_file . "', '" . $residential_addresses[$i] . "', '" . $phone_numbers[$i] . "', '" . $emails[$i] . "', '" . $shares[$i] . "')";
+            // Prepare the SQL statement to insert shareholder/director data
+            $stmt = $conn->prepare("INSERT INTO shareholders_directors (application_id, person_type, name, postal_address, national_id, pin_certificate, passport_photo, residential_address, phone_number, email, shares) VALUES (:application_id, :person_type, :name, :postal_address, :national_id, :pin_certificate, :passport_photo, :residential_address, :phone_number, :email, :shares)");
 
-            // Debugging information
-            error_log("SQL: $sql");
+            // Bind the parameters
+            $stmt->bindParam(':application_id', $application_id, PDO::PARAM_INT);
+            $stmt->bindParam(':person_type', $person_types[$i], PDO::PARAM_STR);
+            $stmt->bindParam(':name', $names[$i], PDO::PARAM_STR);
+            $stmt->bindParam(':postal_address', $postal_addresses[$i], PDO::PARAM_STR);
+            $stmt->bindParam(':national_id', $national_id_target_file, PDO::PARAM_STR);
+            $stmt->bindParam(':pin_certificate', $pin_certificate_target_file, PDO::PARAM_STR);
+            $stmt->bindParam(':passport_photo', $passport_photo_target_file, PDO::PARAM_STR);
+            $stmt->bindParam(':residential_address', $residential_addresses[$i], PDO::PARAM_STR);
+            $stmt->bindParam(':phone_number', $phone_numbers[$i], PDO::PARAM_STR);
+            $stmt->bindParam(':email', $emails[$i], PDO::PARAM_STR);
+            $stmt->bindParam(':shares', $shares[$i], PDO::PARAM_STR);
 
-            if ($conn->query($sql) === FALSE) {
-                echo "Error: " . $sql . "<br>" . $conn->error;
-            }
-        }
+           // Execute the statement
+           $stmt->execute();
+       }
 
-        echo "Data inserted successfully";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
-    }
+       echo "Data inserted successfully";
+   } else {
+       echo "Error inserting data: " . $stmt->errorInfo()[2];
+   }
 }
 
-$conn->close();
+$conn = null;
 ?>

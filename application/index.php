@@ -411,12 +411,10 @@
         html += '<div class="col-md-9 col-sm-9 col-xs-9">';
         html += '<div class="radio">';
         html += '<label>';
-        html += '<input type="radio" name="person_type[]"';
-        html += 'value="shareholder"> Shareholder';
+        html += '<input type="radio" name="person_type_' + count + '[]" value="shareholder"> Shareholder';
         html += '</label>';
         html += '<label>';
-        html += '<input type="radio" name="person_type[]" value="director">';
-        html += 'Director';
+        html += '<input type="radio" name="person_type_' + count + '[]" value="director"> Director';
         html += '</label>';
         html += '</div>';
         html += '</div>';
