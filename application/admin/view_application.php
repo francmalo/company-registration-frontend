@@ -1,5 +1,13 @@
 <?php
-
+// Set session cookie parameters before starting the session
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => true, // Set to true if using HTTPS
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
 
 // Start session
 session_start();
@@ -14,6 +22,7 @@ if (isset($_GET['logout'])) {
     header("Location: login.php");
     exit();
 }
+
 // Database connection details
 $host = 'localhost';
 $dbname = 'business';
@@ -29,13 +38,13 @@ try {
     $application_id = $_GET['id'];
 
     // Prepare the SQL statement to fetch application and shareholder/director data
-   $stmt = $pdo->prepare("SELECT a.*, a.status, sd.person_type, sd.name, sd.postal_address, sd.national_id, sd.pin_certificate, sd.passport_photo, sd.residential_address, sd.phone_number, sd.email, sd.shares
-                       FROM applications a
-                       LEFT JOIN shareholders_directors sd ON a.id = sd.application_id
-                       WHERE a.id = :application_id");
+    $stmt = $pdo->prepare("SELECT a.*, a.status, sd.person_type, sd.name, sd.postal_address, sd.national_id, sd.pin_certificate, sd.passport_photo, sd.residential_address, sd.phone_number, sd.email, sd.shares
+                           FROM applications a
+                           LEFT JOIN shareholders_directors sd ON a.id = sd.application_id
+                           WHERE a.id = :application_id");
 
     // Bind the application ID
-    $stmt->bindParam(':application_id', $application_id);
+    $stmt->bindParam(':application_id', $application_id, PDO::PARAM_INT);
 
     // Execute the statement
     $stmt->execute();
@@ -46,6 +55,7 @@ try {
     echo "Error: " . $e->getMessage();
 }
 ?>
+
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 

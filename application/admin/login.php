@@ -16,18 +16,24 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Prepare an error array to collect errors
+$errors = [];
+
 // Login
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    // Retrieve and sanitize input
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
     // Validate input
     if (empty($username) || empty($password)) {
-        $error = "Username and password are required.";
+        $errors[] = "Username and password are required.";
     } else {
-        // Retrieve user from the database
-        $sql = "SELECT * FROM users WHERE username = '$username'";
-        $result = $conn->query($sql);
+        // Prepare and execute a safe query
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -35,23 +41,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 
             // Verify the password
             if (password_verify($password, $hashed_password)) {
-                // Password is correct, set session variables
+                // Password is correct, regenerate session ID to prevent session fixation
+                session_regenerate_id(true);
+
+                // Set session variables
                 $_SESSION['username'] = $username;
                 // Redirect to the applications.php page
                 header("Location: applications.php");
                 exit();
             } else {
-                $error = "Invalid username or password.";
+                $errors[] = "Invalid username or password.";
             }
         } else {
-            $error = "Invalid username or password.";
+            $errors[] = "Invalid username or password.";
         }
     }
 }
 
 // Logout
 if (isset($_GET['logout'])) {
+    // Destroy the session
     session_destroy();
+    // Start a new session and set a success message
+    session_start();
     $success = "You have been logged out.";
 }
 

@@ -1,4 +1,14 @@
 <?php
+// Set session cookie parameters
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => true, // Set to true if using HTTPS
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+
 // Start session
 session_start();
 
@@ -12,6 +22,7 @@ if (isset($_GET['logout'])) {
     header("Location: login.php");
     exit();
 }
+
 // Database connection details
 $host = 'localhost';
 $dbname = 'business';
@@ -38,6 +49,7 @@ try {
     echo "Error: " . $e->getMessage();
 }
 ?>
+
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
