@@ -1,3 +1,62 @@
+<?php
+// Start session
+session_start();
+
+// Database connection details
+$host = 'localhost';
+$dbname = 'business';
+$username = 'root';
+$password = 'safaricom';
+
+// Connect to the database
+$conn = new mysqli($host, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Login
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Validate input
+    if (empty($username) || empty($password)) {
+        $error = "Username and password are required.";
+    } else {
+        // Retrieve user from the database
+        $sql = "SELECT * FROM users WHERE username = '$username'";
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $hashed_password = $row['password'];
+
+            // Verify the password
+            if (password_verify($password, $hashed_password)) {
+                // Password is correct, set session variables
+                $_SESSION['username'] = $username;
+                // Redirect to the applications.php page
+                header("Location: applications.php");
+                exit();
+            } else {
+                $error = "Invalid username or password.";
+            }
+        } else {
+            $error = "Invalid username or password.";
+        }
+    }
+}
+
+// Logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    $success = "You have been logged out.";
+}
+
+?>
+
 <!DOCTYPE html>
 <html dir="ltr">
 
@@ -40,38 +99,35 @@
         <!-- ============================================================== -->
         <div class="auth-wrapper d-flex no-block justify-content-center align-items-center bg-dark">
             <div class="auth-box bg-dark border-top border-secondary">
-                <div>
+                <div id="loginform">
                     <div class="text-center p-t-20 p-b-20">
-                        <span class="db"><img src="assets/images/logo.png" alt="logo" /></span>
+                        <h2 class="mt-5">ADMIN LOGIN</h2>
                     </div>
-                    <!-- Form -->
-                    <form class="form-horizontal m-t-20" action="index.html">
+
+                    <?php if (isset($error)) { ?>
+                    <div class="alert alert-danger"><?php echo $error; ?></div>
+                    <?php } ?>
+
+                    <form class="form-horizontal m-t-20" id="loginform" method="post" action="applications.php">
                         <div class="row p-b-30">
                             <div class="col-12">
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text bg-success text-white" id="basic-addon1"><i class="ti-user"></i></span>
+                                        <span class="input-group-text bg-success text-white" id="basic-addon1"><i
+                                                class="ti-user"></i></span>
                                     </div>
-                                    <input type="text" class="form-control form-control-lg" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" required>
-                                </div>
-                                <!-- email -->
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text bg-danger text-white" id="basic-addon1"><i class="ti-email"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control form-control-lg" placeholder="Email Address" aria-label="Username" aria-describedby="basic-addon1" required>
+                                    <input type="text" class="form-control form-control-lg" placeholder="Username"
+                                        aria-label="Username" aria-describedby="basic-addon1" name="username"
+                                        required="">
                                 </div>
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text bg-warning text-white" id="basic-addon2"><i class="ti-pencil"></i></span>
+                                        <span class="input-group-text bg-warning text-white" id="basic-addon2"><i
+                                                class="ti-pencil"></i></span>
                                     </div>
-                                    <input type="text" class="form-control form-control-lg" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1" required>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text bg-info text-white" id="basic-addon2"><i class="ti-pencil"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control form-control-lg" placeholder=" Confirm Password" aria-label="Password" aria-describedby="basic-addon1" required>
+                                    <input type="password" class="form-control form-control-lg" placeholder="Password"
+                                        aria-label="Password" aria-describedby="basic-addon1" name="password"
+                                        required="">
                                 </div>
                             </div>
                         </div>
@@ -79,30 +135,64 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <div class="p-t-20">
-                                        <button class="btn btn-block btn-lg btn-info" type="submit">Sign Up</button>
+                                        <button class="btn btn-success float-right" type="submit"
+                                            name="login">Login</button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+            <div id="recoverform">
+                <div class="text-center">
+                    <span class="text-white">Enter your e-mail address below and we will send you instructions how
+                        to recover a password.</span>
+                </div>
+                <div class="row m-t-20">
+                    <!-- Form -->
+                    <form class="col-12" action="index.html">
+                        <!-- email -->
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-danger text-white" id="basic-addon1"><i
+                                        class="ti-email"></i></span>
+                            </div>
+                            <input type="text" class="form-control form-control-lg" placeholder="Email Address"
+                                aria-label="Username" aria-describedby="basic-addon1">
+                        </div>
+                        <!-- pwd -->
+                        <div class="row m-t-20 p-t-20 border-top border-secondary">
+                            <div class="col-12">
+                                <a class="btn btn-success" href="#" id="to-login" name="action">Back To Login</a>
+                                <button class="btn btn-info float-right" type="button" name="action">Recover</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <!-- ============================================================== -->
-        <!-- Login box.scss -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Page wrapper scss in scafholding.scss -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Page wrapper scss in scafholding.scss -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Right Sidebar -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Right Sidebar -->
-        <!-- ============================================================== -->
+    </div>
+
+
+
+    <!-- ============================================================== -->
+    <!-- Login box.scss -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Page wrapper scss in scafholding.scss -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Page wrapper scss in scafholding.scss -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Right Sidebar -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Right Sidebar -->
+    <!-- ============================================================== -->
     </div>
     <!-- ============================================================== -->
     <!-- All Required js -->
@@ -117,7 +207,24 @@
     <script>
     $('[data-toggle="tooltip"]').tooltip();
     $(".preloader").fadeOut();
+    // ============================================================== 
+    // Login and Recover Password 
+    // ============================================================== 
+    $('#to-recover').on("click", function() {
+        $("#loginform").slideUp();
+        $("#recoverform").fadeIn();
+    });
+    $('#to-login').click(function() {
+
+        $("#recoverform").hide();
+        $("#loginform").fadeIn();
+    });
     </script>
+
 </body>
 
 </html>
+<?php
+// Close the database connection
+$conn->close();
+?>
