@@ -12,6 +12,13 @@ session_set_cookie_params([
 // Start session
 session_start();
 
+// Check if the user is logged in
+if (!isset($_SESSION['username'])) {
+    // User is not logged in, redirect to the login page
+    header("Location: login.php");
+    exit();
+}
+
 // Check if the logout parameter is set
 if (isset($_GET['logout'])) {
     // Destroy the session and remove session data
@@ -22,6 +29,9 @@ if (isset($_GET['logout'])) {
     header("Location: login.php");
     exit();
 }
+
+// Rest of the code for applications.php
+// ...
 
 // Database connection details
 $host = 'localhost';

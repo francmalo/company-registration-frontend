@@ -1,4 +1,14 @@
 <?php
+// Set session cookie parameters
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => true, // Set to true if using HTTPS
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+
 // Start session
 session_start();
 
@@ -19,6 +29,19 @@ if ($conn->connect_error) {
 // Prepare an error array to collect errors
 $errors = [];
 
+// Logout
+if (isset($_GET['logout'])) {
+    // Unset all session variables
+    session_unset();
+
+    // Destroy the session
+    session_destroy();
+
+    // Redirect to the login page
+    header("Location: login.php");
+    exit();
+}
+
 // Login
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     // Retrieve and sanitize input
@@ -29,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     if (empty($username) || empty($password)) {
         $errors[] = "Username and password are required.";
     } else {
-        // Prepare and execute a safe query
+        // Prepare and execute a safe query using prepared statements
         $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -46,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 
                 // Set session variables
                 $_SESSION['username'] = $username;
+
                 // Redirect to the applications.php page
                 header("Location: applications.php");
                 exit();
@@ -57,17 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         }
     }
 }
-
-// Logout
-if (isset($_GET['logout'])) {
-    // Destroy the session
-    session_destroy();
-    // Start a new session and set a success message
-    session_start();
-    $success = "You have been logged out.";
-}
-
 ?>
+
 
 <!DOCTYPE html>
 <html dir="ltr">
@@ -120,7 +135,8 @@ if (isset($_GET['logout'])) {
                     <div class="alert alert-danger"><?php echo $error; ?></div>
                     <?php } ?>
 
-                    <form class="form-horizontal m-t-20" id="loginform" method="post" action="applications.php">
+                    <form class="form-horizontal m-t-20" id="loginform" method="post"
+                        action="<?php echo $_SERVER['PHP_SELF']; ?>">
                         <div class="row p-b-30">
                             <div class="col-12">
                                 <div class="input-group mb-3">
