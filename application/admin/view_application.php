@@ -34,6 +34,22 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Check if the update_status form has been submitted
+ if (isset($_POST['update_status']) && isset($_POST['application_id'])) {
+    $application_id = $_POST['application_id'];
+    $new_status = $_POST['update_status'];
+
+    // Update the status with the selected value
+    $update_stmt = $pdo->prepare("UPDATE applications SET status = :new_status WHERE id = :application_id");
+    $update_stmt->bindParam(':new_status', $new_status, PDO::PARAM_STR);
+    $update_stmt->bindParam(':application_id', $application_id, PDO::PARAM_INT);
+    $update_stmt->execute();
+
+    // Redirect to avoid form resubmission
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit();
+}
+
     // Get the application ID from the query string
     $application_id = $_GET['id'];
 
@@ -55,7 +71,6 @@ try {
     echo "Error: " . $e->getMessage();
 }
 ?>
-
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
@@ -428,19 +443,34 @@ try {
                     <div class="col-md-12">
                         <div class="card card-body printableArea">
                             <div class="container">
-
                                 <div class="card">
-
                                     <div class="card-header">
                                         <h3>Application Status</h3>
                                     </div>
                                     <div class="card-body">
-                                        <p><strong>Status:</strong> <?php echo $application_data[0]['status']; ?></p>
+                                        <?php if ($application_data[0]['status'] == 'pending' || $application_data[0]['status'] == 'in progress') : ?>
+                                        <form method="post" action="">
+                                            <input type="hidden" name="application_id"
+                                                value="<?php echo $application_data[0]['id']; ?>">
+                                            <select name="update_status" class="form-control">
+                                                <option value="pending"
+                                                    <?php if ($application_data[0]['status'] == 'pending') echo 'selected'; ?>>
+                                                    Pending</option>
+                                                <option value="in progress"
+                                                    <?php if ($application_data[0]['status'] == 'in progress') echo 'selected'; ?>>
+                                                    In Progress</option>
+                                                <option value="completed">Mark as Completed</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary mt-2">Update Status</button>
+                                        </form>
+                                        <?php else : ?>
+                                        <span
+                                            class="badge badge-pill badge-success"><?php echo $application_data[0]['status']; ?></span>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="card-header">
                                         <h3>Contact Person Information</h3>
                                     </div>
-
                                     <div class="card-body">
                                         <p><strong>Full Name:</strong> <?php echo $application_data[0]['fullname']; ?>
                                         </p>
@@ -494,8 +524,7 @@ try {
                                         <p><strong>Floor/Room No.:</strong>
                                             <?php echo $application_data[0]['floor_room']; ?></p>
                                         <p><strong>Postal Address:</strong>
-                                            <?php echo $application_data[0]['application_postal_address']; ?>
-                                        </p>
+                                            <?php echo $application_data[0]['application_postal_address']; ?></p>
                                         <p><strong>Email Address:</strong>
                                             <?php echo $application_data[0]['application_email']; ?></p>
                                         <p><strong>Phone Number:</strong> <?php echo $application_data[0]['phone']; ?>
@@ -508,7 +537,7 @@ try {
                                         <h3>Shareholders/Directors Information</h3>
                                     </div>
                                     <div class="card-body">
-                                        <table class="table ">
+                                        <table class="table">
                                             <thead>
                                                 <tr>
                                                     <th>Person Type</th>
@@ -530,16 +559,15 @@ try {
                                                     <td><?php echo $data['person_type']; ?></td>
                                                     <td><?php echo $data['name']; ?></td>
                                                     <td><?php echo $data['postal_address']; ?></td>
-                                                    <td> <a href="../<?php echo $data['national_id']; ?>"
+                                                    <td><a href="../<?php echo $data['national_id']; ?>"
                                                             target="_blank">
                                                             <i class="fas fa-eye"></i> View
                                                         </a></td>
-                                                    <td> <a href="../<?php echo $data['pin_certificate']; ?>"
+                                                    <td><a href="../<?php echo $data['pin_certificate']; ?>"
                                                             target="_blank">
                                                             <i class="fas fa-eye"></i> View
                                                         </a></td>
                                                     <td>
-
                                                         <img src="../<?php echo $data['passport_photo']; ?>"
                                                             alt="Passport Photo" style="max-width: 100%; height: auto;">
                                                         <br>
@@ -550,7 +578,6 @@ try {
                                                         <a href="../<?php echo $data['passport_photo']; ?>"
                                                             download>Download</a>
                                                     </td>
-
                                                     <td><?php echo $data['residential_address']; ?></td>
                                                     <td><?php echo $data['phone_number']; ?></td>
                                                     <td><?php echo $data['email']; ?></td>
@@ -562,11 +589,9 @@ try {
                                         </table>
                                     </div>
                                 </div>
-
-
-
                             </div>
                         </div>
+
                     </div>
                 </div>
 

@@ -22,20 +22,14 @@ if (isset($_GET['logout'])) {
     header("Location: login.php");
     exit();
 }
-
 // Database connection details
 $host = 'localhost';
 $dbname = 'business';
 $username = 'root';
 $password = 'safaricom';
 
-// Initialize variables
+// Initialize $applications as an empty array
 $applications = [];
-$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
-$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
-$status = isset($_GET['status']) ? $_GET['status'] : '';
-$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$per_page = 10; // Number of results to display per page
 
 try {
     // Create a new PDO instance
@@ -46,32 +40,28 @@ try {
     $params = [];
 
     // Build the WHERE clause based on the selected filters
-    if (!empty($start_date) && !empty($end_date)) {
+    if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
+        $start_date = $_GET['start_date'];
+        $end_date = $_GET['end_date'];
         $where .= " AND a.created_at BETWEEN :start_date AND :end_date";
         $params[':start_date'] = $start_date;
         $params[':end_date'] = $end_date . ' 23:59:59'; // Include the end of the day
     }
 
-    if (!empty($status)) {
+    if (isset($_GET['status']) && $_GET['status'] != '') {
+        $status = $_GET['status'];
         $where .= " AND a.status = :status";
         $params[':status'] = $status;
     }
 
-    // Calculate the offset for pagination
-    $offset = ($page - 1) * $per_page;
-
-    // Prepare the SQL statement to fetch application data with pagination
+    // Prepare the SQL statement to fetch application data
     $stmt = $pdo->prepare("SELECT a.id, a.fullname, a.username, a.address, a.mobile, a.status, COUNT(sd.id) AS num_shareholders_directors
                            FROM applications a
                            LEFT JOIN shareholders_directors sd ON a.id = sd.application_id
                            WHERE 1 $where
-                           GROUP BY a.id
-                           ORDER BY a.created_at DESC
-                           LIMIT :offset, :per_page");
+                           GROUP BY a.id");
 
     // Bind the parameters
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-    $stmt->bindValue(':per_page', $per_page, PDO::PARAM_INT);
     foreach ($params as $key => $value) {
         $stmt->bindValue($key, $value);
     }
@@ -81,23 +71,6 @@ try {
 
     // Fetch the results
     $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Count the total number of results for pagination
-    $total_results_stmt = $pdo->prepare("SELECT COUNT(*) AS total FROM (
-                                            SELECT a.id
-                                            FROM applications a
-                                            LEFT JOIN shareholders_directors sd ON a.id = sd.application_id
-                                            WHERE 1 $where
-                                            GROUP BY a.id
-                                         ) AS subquery");
-    foreach ($params as $key => $value) {
-        $total_results_stmt->bindValue($key, $value);
-    }
-    $total_results_stmt->execute();
-    $total_results = $total_results_stmt->fetch(PDO::FETCH_ASSOC)['total'];
-
-    // Calculate the total number of pages
-    $total_pages = ceil($total_results / $per_page);
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -430,7 +403,7 @@ try {
             <div class="page-breadcrumb">
                 <div class="row">
                     <div class="col-12 d-flex no-block align-items-center">
-                        <h4 class="page-title"></h4>
+                        <h4 class="page-title">Tables</h4>
                         <div class="ml-auto text-right">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
@@ -452,12 +425,14 @@ try {
                 <!-- ============================================================== -->
                 <!-- Start Page Content -->
                 <!-- ============================================================== -->
-
                 <div class="row">
                     <div class="col-12">
+
+
+
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Business Applications</h5>
+                                <h5 class="card-title">Business Appications</h5>
 
                                 <form method="get" class="mb-3">
                                     <div class="row">
@@ -465,14 +440,15 @@ try {
                                             <div class="form-group">
                                                 <label for="start_date">Start Date:</label>
                                                 <input type="date" class="form-control" id="start_date"
-                                                    name="start_date" value="<?php echo $start_date; ?>">
+                                                    name="start_date"
+                                                    value="<?php echo isset($_GET['start_date']) ? $_GET['start_date'] : ''; ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="end_date">End Date:</label>
                                                 <input type="date" class="form-control" id="end_date" name="end_date"
-                                                    value="<?php echo $end_date; ?>">
+                                                    value="<?php echo isset($_GET['end_date']) ? $_GET['end_date'] : ''; ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -481,24 +457,24 @@ try {
                                                 <select class="form-control" id="status" name="status">
                                                     <option value="">All</option>
                                                     <option value="pending"
-                                                        <?php echo $status == 'pending' ? 'selected' : ''; ?>>Pending
-                                                    </option>
+                                                        <?php echo isset($_GET['status']) && $_GET['status'] == 'pending' ? 'selected' : ''; ?>>
+                                                        Pending</option>
                                                     <option value="in progress"
-                                                        <?php echo $status == 'in progress' ? 'selected' : ''; ?>>In
-                                                        Progress</option>
+                                                        <?php echo isset($_GET['status']) && $_GET['status'] == 'in progress' ? 'selected' : ''; ?>>
+                                                        In Progress</option>
                                                     <option value="completed"
-                                                        <?php echo $status == 'completed' ? 'selected' : ''; ?>>
+                                                        <?php echo isset($_GET['status']) && $_GET['status'] == 'completed' ? 'selected' : ''; ?>>
                                                         Completed</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    <button type="submit" class="btn btn-primary">Filter</button>
                                 </form>
-
                                 <div class="table-responsive">
                                     <table id="zero_config" class="table table-striped table-bordered">
                                         <thead>
+                                            <tr>
                                             <tr>
                                                 <th>Full Name</th>
                                                 <th>Email</th>
@@ -507,6 +483,7 @@ try {
                                                 <th>Status</th>
                                                 <th>Shareholders/Directors</th>
                                                 <th>Action</th>
+                                            </tr>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -519,137 +496,101 @@ try {
                                                 <td><?php echo $application['mobile']; ?></td>
                                                 <td>
                                                     <?php
-                                            $status = $application['status'];
-                                            $badge_class = '';
-
-                                            if ($status == 'pending') {
-                                                $badge_class = 'badge badge-pill badge-warning';
-                                            } elseif ($status == 'in progress') {
-                                                $badge_class = 'badge badge-pill badge-primary';
-                                            } elseif ($status == 'completed') {
-                                                $badge_class = 'badge badge-pill badge-success';
-                                            }
-                                            ?>
+            $status = $application['status'];
+            $badge_class = '';
+            
+            if ($status == 'pending') {
+                $badge_class = 'badge badge-pill badge-warning';
+            } elseif ($status == 'in progress') {
+                $badge_class = 'badge badge-pill badge-primary';
+            } elseif ($status == 'completed') {
+                $badge_class = 'badge badge-pill badge-success';
+            }
+            ?>
                                                     <span
                                                         class="<?php echo $badge_class; ?>"><?php echo $status; ?></span>
                                                 </td>
+
                                                 <td><?php echo $application['num_shareholders_directors']; ?></td>
                                                 <td><a href="view_application.php?id=<?php echo $application['id']; ?>"
-                                                        class="btn btn-primary">View More</a></td>
-                                            </tr> <?php endforeach; ?> <?php else : ?> <tr>
+                                                        class="btn btn-primary">View
+                                                        More</a></td>
+
+                                                <?php endforeach; ?>
+                                                <?php else : ?>
+                                            <tr>
                                                 <td colspan="7" class="text-center">No applications found.</td>
                                             </tr>
                                             <?php endif; ?>
                                         </tbody>
+                                        <!-- </tbody> -->
+
+
                                     </table>
                                 </div>
-
-                                <?php if ($total_pages > 1) : ?>
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination justify-content-center">
-                                        <li class="page-item <?php echo ($page == 1) ? 'disabled' : ''; ?>">
-                                            <a class="page-link"
-                                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => 1])); ?>"
-                                                aria-label="First">
-                                                <span aria-hidden="true">&laquo;</span>
-                                                <span class="sr-only">First</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item <?php echo ($page == 1) ? 'disabled' : ''; ?>">
-                                            <a class="page-link"
-                                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>"
-                                                aria-label="Previous">
-                                                <span aria-hidden="true">&lsaquo;</span>
-                                                <span class="sr-only">Previous</span>
-                                            </a>
-                                        </li>
-                                        <?php for ($i = max(1, $page - 2); $i <= min($total_pages, $page + 2); $i++) : ?>
-                                        <li class="page-item <?php echo ($page == $i) ? 'active' : ''; ?>">
-                                            <a class="page-link"
-                                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>"><?php echo $i; ?></a>
-                                        </li>
-                                        <?php endfor; ?>
-                                        <li class="page-item <?php echo ($page == $total_pages) ? 'disabled' : ''; ?>">
-                                            <a class="page-link"
-                                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>"
-                                                aria-label="Next">
-                                                <span aria-hidden="true">&rsaquo;</span>
-                                                <span class="sr-only">Next</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item <?php echo ($page == $total_pages) ? 'disabled' : ''; ?>">
-                                            <a class="page-link"
-                                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => $total_pages])); ?>"
-                                                aria-label="Last">
-                                                <span aria-hidden="true">&raquo;</span>
-                                                <span class="sr-only">Last</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                                <?php endif; ?>
 
                             </div>
                         </div>
                     </div>
-                    <!-- ============================================================== -->
-                    <!-- End PAge Content -->
-                    <!-- ============================================================== -->
-                    <!-- ============================================================== -->
-                    <!-- Right sidebar -->
-                    <!-- ============================================================== -->
-                    <!-- .right-sidebar -->
-                    <!-- ============================================================== -->
-                    <!-- End Right sidebar -->
-                    <!-- ============================================================== -->
                 </div>
                 <!-- ============================================================== -->
-                <!-- End Container fluid  -->
+                <!-- End PAge Content -->
                 <!-- ============================================================== -->
                 <!-- ============================================================== -->
-                <!-- footer -->
+                <!-- Right sidebar -->
                 <!-- ============================================================== -->
-                <footer class="footer text-center">
-                    All Rights Reserved by Matrix-admin. Designed and Developed by <a
-                        href="https://wrappixel.com">WrapPixel</a>.
-                </footer>
+                <!-- .right-sidebar -->
                 <!-- ============================================================== -->
-                <!-- End footer -->
+                <!-- End Right sidebar -->
                 <!-- ============================================================== -->
             </div>
             <!-- ============================================================== -->
-            <!-- End Page wrapper  -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            <footer class="footer text-center">
+                All Rights Reserved by Matrix-admin. Designed and Developed by <a
+                    href="https://wrappixel.com">WrapPixel</a>.
+            </footer>
+            <!-- ============================================================== -->
+            <!-- End footer -->
             <!-- ============================================================== -->
         </div>
         <!-- ============================================================== -->
-        <!-- End Wrapper -->
+        <!-- End Page wrapper  -->
         <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- All Jquery -->
-        <!-- ============================================================== -->
-        <script src="assets/libs/jquery/dist/jquery.min.js"></script>
-        <!-- Bootstrap tether Core JavaScript -->
-        <script src="assets/libs/popper.js/dist/umd/popper.min.js"></script>
-        <script src="assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
-        <!-- slimscrollbar scrollbar JavaScript -->
-        <script src="assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
-        <script src="assets/extra-libs/sparkline/sparkline.js"></script>
-        <!--Wave Effects -->
-        <script src="dist/js/waves.js"></script>
-        <!--Menu sidebar -->
-        <script src="dist/js/sidebarmenu.js"></script>
-        <!--Custom JavaScript -->
-        <script src="dist/js/custom.min.js"></script>
-        <!-- this page js -->
-        <script src="assets/extra-libs/multicheck/datatable-checkbox-init.js"></script>
-        <script src="assets/extra-libs/multicheck/jquery.multicheck.js"></script>
-        <script src="assets/extra-libs/DataTables/datatables.min.js"></script>
-        <script>
-        /****************************************
-         *       Basic Table                   *
-         ****************************************/
-        $('#zero_config').DataTable();
-        </script>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="assets/libs/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="assets/libs/popper.js/dist/umd/popper.min.js"></script>
+    <script src="assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+    <script src="assets/extra-libs/sparkline/sparkline.js"></script>
+    <!--Wave Effects -->
+    <script src="dist/js/waves.js"></script>
+    <!--Menu sidebar -->
+    <script src="dist/js/sidebarmenu.js"></script>
+    <!--Custom JavaScript -->
+    <script src="dist/js/custom.min.js"></script>
+    <!-- this page js -->
+    <script src="assets/extra-libs/multicheck/datatable-checkbox-init.js"></script>
+    <script src="assets/extra-libs/multicheck/jquery.multicheck.js"></script>
+    <script src="assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script>
+    /****************************************
+     *       Basic Table                   *
+     ****************************************/
+    $('#zero_config').DataTable();
+    </script>
 
 </body>
 

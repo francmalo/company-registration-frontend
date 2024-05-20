@@ -1,4 +1,28 @@
 <?php
+// Set session cookie parameters before starting the session
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => true, // Set to true if using HTTPS
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+
+// Start session
+session_start();
+
+// Check if the logout parameter is set
+if (isset($_GET['logout'])) {
+    // Destroy the session and remove session data
+    session_unset();
+    session_destroy();
+
+    // Redirect to the login page
+    header("Location: login.php");
+    exit();
+}
+
 // Database connection details
 $host = 'localhost';
 $dbname = 'business';
@@ -10,17 +34,31 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Check if the update_status form has been submitted
+    if (isset($_POST['update_status']) && isset($_POST['application_id'])) {
+        $application_id = $_POST['application_id'];
+        
+        // Update the status to 'completed'
+        $update_stmt = $pdo->prepare("UPDATE applications SET status = 'completed' WHERE id = :application_id");
+        $update_stmt->bindParam(':application_id', $application_id, PDO::PARAM_INT);
+        $update_stmt->execute();
+
+        // Redirect to avoid form resubmission
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
+    }
+
     // Get the application ID from the query string
     $application_id = $_GET['id'];
 
     // Prepare the SQL statement to fetch application and shareholder/director data
-   $stmt = $pdo->prepare("SELECT a.*, a.status, sd.person_type, sd.name, sd.postal_address, sd.national_id, sd.pin_certificate, sd.passport_photo, sd.residential_address, sd.phone_number, sd.email, sd.shares
-                       FROM applications a
-                       LEFT JOIN shareholders_directors sd ON a.id = sd.application_id
-                       WHERE a.id = :application_id");
+    $stmt = $pdo->prepare("SELECT a.*, a.status, sd.person_type, sd.name, sd.postal_address, sd.national_id, sd.pin_certificate, sd.passport_photo, sd.residential_address, sd.phone_number, sd.email, sd.shares
+                           FROM applications a
+                           LEFT JOIN shareholders_directors sd ON a.id = sd.application_id
+                           WHERE a.id = :application_id");
 
     // Bind the application ID
-    $stmt->bindParam(':application_id', $application_id);
+    $stmt->bindParam(':application_id', $application_id, PDO::PARAM_INT);
 
     // Execute the statement
     $stmt->execute();
@@ -91,60 +129,36 @@ try {
             <nav class="navbar top-navbar navbar-expand-md navbar-dark">
                 <div class="navbar-header" data-logobg="skin5">
                     <!-- This is for the sidebar toggle which is visible on mobile only -->
-                    <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)"><i
-                            class="ti-menu ti-close"></i></a>
-                    <!-- ============================================================== -->
+                    <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)">
+                        <i class="ti-menu ti-close"></i>
+                    </a>
                     <!-- Logo -->
-                    <!-- ============================================================== -->
                     <a class="navbar-brand" href="index.html">
                         <!-- Logo icon -->
                         <b class="logo-icon p-l-10">
-                            <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                             <!-- Dark Logo icon -->
                             <img src="assets/images/logo-icon.png" alt="homepage" class="light-logo" />
-
                         </b>
-                        <!--End Logo icon -->
                         <!-- Logo text -->
                         <span class="logo-text">
-                            <!-- dark Logo text -->
                             <img src="assets/images/logo-text.png" alt="homepage" class="light-logo" />
-
                         </span>
-                        <!-- Logo icon -->
-                        <!-- <b class="logo-icon"> -->
-                        <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
-                        <!-- Dark Logo icon -->
-                        <!-- <img src="assets/images/logo-text.png" alt="homepage" class="light-logo" /> -->
-
-                        <!-- </b> -->
-                        <!--End Logo icon -->
                     </a>
-                    <!-- ============================================================== -->
-                    <!-- End Logo -->
-                    <!-- ============================================================== -->
-                    <!-- ============================================================== -->
                     <!-- Toggle which is visible on mobile only -->
-                    <!-- ============================================================== -->
                     <a class="topbartoggler d-block d-md-none waves-effect waves-light" href="javascript:void(0)"
                         data-toggle="collapse" data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i
-                            class="ti-more"></i></a>
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="ti-more"></i>
+                    </a>
                 </div>
-                <!-- ============================================================== -->
-                <!-- End Logo -->
-                <!-- ============================================================== -->
                 <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
-                    <!-- ============================================================== -->
-                    <!-- toggle and nav items -->
-                    <!-- ============================================================== -->
                     <ul class="navbar-nav float-left mr-auto">
-                        <li class="nav-item d-none d-md-block"><a
-                                class="nav-link sidebartoggler waves-effect waves-light" href="javascript:void(0)"
-                                data-sidebartype="mini-sidebar"><i class="mdi mdi-menu font-24"></i></a></li>
-                        <!-- ============================================================== -->
-                        <!-- create new -->
-                        <!-- ============================================================== -->
+                        <li class="nav-item d-none d-md-block">
+                            <a class="nav-link sidebartoggler waves-effect waves-light" href="javascript:void(0)"
+                                data-sidebartype="mini-sidebar">
+                                <i class="mdi mdi-menu font-24"></i>
+                            </a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -158,27 +172,21 @@ try {
                                 <a class="dropdown-item" href="#">Something else here</a>
                             </div>
                         </li>
-                        <!-- ============================================================== -->
-                        <!-- Search -->
-                        <!-- ============================================================== -->
-                        <li class="nav-item search-box"> <a class="nav-link waves-effect waves-dark"
-                                href="javascript:void(0)"><i class="ti-search"></i></a>
+                        <li class="nav-item search-box">
+                            <a class="nav-link waves-effect waves-dark" href="javascript:void(0)"><i
+                                    class="ti-search"></i></a>
                             <form class="app-search position-absolute">
-                                <input type="text" class="form-control" placeholder="Search &amp; enter"> <a
-                                    class="srh-btn"><i class="ti-close"></i></a>
+                                <input type="text" class="form-control" placeholder="Search &amp; enter">
+                                <a class="srh-btn"><i class="ti-close"></i></a>
                             </form>
                         </li>
                     </ul>
-                    <!-- ============================================================== -->
-                    <!-- Right side toggle and nav items -->
-                    <!-- ============================================================== -->
                     <ul class="navbar-nav float-right">
-                        <!-- ============================================================== -->
-                        <!-- Comment -->
-                        <!-- ============================================================== -->
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle waves-effect waves-dark" href="" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-bell font-24"></i>
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-bell font-24"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="#">Action</a>
@@ -187,23 +195,16 @@ try {
                                 <a class="dropdown-item" href="#">Something else here</a>
                             </div>
                         </li>
-                        <!-- ============================================================== -->
-                        <!-- End Comment -->
-                        <!-- ============================================================== -->
-                        <!-- ============================================================== -->
-                        <!-- Messages -->
-                        <!-- ============================================================== -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle waves-effect waves-dark" href="" id="2"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-                                    class="font-24 mdi mdi-comment-processing"></i>
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="font-24 mdi mdi-comment-processing"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right mailbox animated bounceInDown"
                                 aria-labelledby="2">
                                 <ul class="list-style-none">
                                     <li>
                                         <div class="">
-                                            <!-- Message -->
                                             <a href="javascript:void(0)" class="link border-top">
                                                 <div class="d-flex no-block align-items-center p-10">
                                                     <span class="btn btn-success btn-circle"><i
@@ -214,7 +215,6 @@ try {
                                                     </div>
                                                 </div>
                                             </a>
-                                            <!-- Message -->
                                             <a href="javascript:void(0)" class="link border-top">
                                                 <div class="d-flex no-block align-items-center p-10">
                                                     <span class="btn btn-info btn-circle"><i
@@ -225,7 +225,6 @@ try {
                                                     </div>
                                                 </div>
                                             </a>
-                                            <!-- Message -->
                                             <a href="javascript:void(0)" class="link border-top">
                                                 <div class="d-flex no-block align-items-center p-10">
                                                     <span class="btn btn-primary btn-circle"><i
@@ -236,13 +235,12 @@ try {
                                                     </div>
                                                 </div>
                                             </a>
-                                            <!-- Message -->
                                             <a href="javascript:void(0)" class="link border-top">
                                                 <div class="d-flex no-block align-items-center p-10">
                                                     <span class="btn btn-danger btn-circle"><i
                                                             class="fa fa-link"></i></span>
                                                     <div class="m-l-10">
-                                                        <h5 class="m-b-0">Luanch Admin</h5>
+                                                        <h5 class="m-b-0">Launch Admin</h5>
                                                         <span class="mail-desc">Just see the my new admin!</span>
                                                     </div>
                                                 </div>
@@ -252,17 +250,11 @@ try {
                                 </ul>
                             </div>
                         </li>
-                        <!-- ============================================================== -->
-                        <!-- End Messages -->
-                        <!-- ============================================================== -->
-
-                        <!-- ============================================================== -->
-                        <!-- User profile and search -->
-                        <!-- ============================================================== -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic" href=""
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img
-                                    src="assets/images/users/1.jpg" alt="user" class="rounded-circle" width="31"></a>
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="assets/images/users/1.jpg" alt="user" class="rounded-circle" width="31">
+                            </a>
                             <div class="dropdown-menu dropdown-menu-right user-dd animated">
                                 <a class="dropdown-item" href="javascript:void(0)"><i class="ti-user m-r-5 m-l-5"></i>
                                     My Profile</a>
@@ -281,9 +273,11 @@ try {
                                         class="btn btn-sm btn-success btn-rounded">View Profile</a></div>
                             </div>
                         </li>
-                        <!-- ============================================================== -->
-                        <!-- User profile and search -->
-                        <!-- ============================================================== -->
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="?logout" title="Logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -414,6 +408,7 @@ try {
             <!-- ============================================================== -->
             <div class="page-breadcrumb">
                 <div class="row">
+
                     <div class="col-12 d-flex no-block align-items-center">
                         <h4 class="page-title">
                             Application Details
@@ -421,14 +416,17 @@ try {
                         <div class="ml-auto text-right">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Library</li>
+                                    <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="applications.php">applications</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">view application</li>
                                 </ol>
                             </nav>
                         </div>
                     </div>
                 </div>
             </div>
+
+            </li>
             <!-- ============================================================== -->
             <!-- End Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
@@ -443,19 +441,32 @@ try {
                     <div class="col-md-12">
                         <div class="card card-body printableArea">
                             <div class="container">
-
                                 <div class="card">
-
                                     <div class="card-header">
                                         <h3>Application Status</h3>
                                     </div>
                                     <div class="card-body">
-                                        <p><strong>Status:</strong> <?php echo $application_data[0]['status']; ?></p>
+                                        <p><strong>Status:</strong>
+                                            <?php if ($application_data[0]['status'] == 'pending') : ?>
+                                            <span
+                                                class="badge badge-pill badge-warning"><?php echo $application_data[0]['status']; ?></span>
+                                            <?php else : ?>
+                                            <span
+                                                class="badge badge-pill badge-success"><?php echo $application_data[0]['status']; ?></span>
+                                            <?php endif; ?>
+                                        </p>
+                                        <?php if ($application_data[0]['status'] == 'pending') : ?>
+                                        <form method="post" action="">
+                                            <input type="hidden" name="application_id"
+                                                value="<?php echo $application_data[0]['id']; ?>">
+                                            <button type="submit" name="update_status" class="btn btn-success">Mark as
+                                                Completed</button>
+                                        </form>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="card-header">
                                         <h3>Contact Person Information</h3>
                                     </div>
-
                                     <div class="card-body">
                                         <p><strong>Full Name:</strong> <?php echo $application_data[0]['fullname']; ?>
                                         </p>
@@ -509,8 +520,7 @@ try {
                                         <p><strong>Floor/Room No.:</strong>
                                             <?php echo $application_data[0]['floor_room']; ?></p>
                                         <p><strong>Postal Address:</strong>
-                                            <?php echo $application_data[0]['application_postal_address']; ?>
-                                        </p>
+                                            <?php echo $application_data[0]['application_postal_address']; ?></p>
                                         <p><strong>Email Address:</strong>
                                             <?php echo $application_data[0]['application_email']; ?></p>
                                         <p><strong>Phone Number:</strong> <?php echo $application_data[0]['phone']; ?>
@@ -523,7 +533,7 @@ try {
                                         <h3>Shareholders/Directors Information</h3>
                                     </div>
                                     <div class="card-body">
-                                        <table class="table ">
+                                        <table class="table">
                                             <thead>
                                                 <tr>
                                                     <th>Person Type</th>
@@ -546,20 +556,24 @@ try {
                                                     <td><?php echo $data['name']; ?></td>
                                                     <td><?php echo $data['postal_address']; ?></td>
                                                     <td><a href="../<?php echo $data['national_id']; ?>"
-                                                            target="_blank">View</a></td>
+                                                            target="_blank">
+                                                            <i class="fas fa-eye"></i> View
+                                                        </a></td>
                                                     <td><a href="../<?php echo $data['pin_certificate']; ?>"
-                                                            target="_blank">View</a></td>
+                                                            target="_blank">
+                                                            <i class="fas fa-eye"></i> View
+                                                        </a></td>
                                                     <td>
-
                                                         <img src="../<?php echo $data['passport_photo']; ?>"
                                                             alt="Passport Photo" style="max-width: 100%; height: auto;">
                                                         <br>
                                                         <a href="../<?php echo $data['passport_photo']; ?>"
-                                                            target="_blank">View</a> |
+                                                            target="_blank">
+                                                            <i class="fas fa-eye"></i> View
+                                                        </a> |
                                                         <a href="../<?php echo $data['passport_photo']; ?>"
                                                             download>Download</a>
                                                     </td>
-
                                                     <td><?php echo $data['residential_address']; ?></td>
                                                     <td><?php echo $data['phone_number']; ?></td>
                                                     <td><?php echo $data['email']; ?></td>
@@ -571,11 +585,9 @@ try {
                                         </table>
                                     </div>
                                 </div>
-
-
-
                             </div>
                         </div>
+
                     </div>
                 </div>
 
